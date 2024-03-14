@@ -4,7 +4,7 @@ import pandas as pd
 
 from cyvcf2 import VCF
 
-def dfs_from_vcf(file: str, samples: list) -> pd.DataFrame:    
+def dfs_from_vcf(filname: str, samples: list) -> pd.DataFrame:    
     df_repeats = {
         "str_id": [],
         "chr": [],
@@ -22,7 +22,7 @@ def dfs_from_vcf(file: str, samples: list) -> pd.DataFrame:
         "genotype": [],
     }
     
-    vcf = VCF(file, samples=samples)
+    vcf = VCF(filname, samples=samples)
     for variant in vcf:
         str_id = f"{variant.CHROM}_{variant.POS}"
         df_repeats["str_id"].append(str_id)
@@ -71,3 +71,46 @@ def load_haplotype_vars(filename: str, min_mapq=20) -> pd.DataFrame:
     )
 
     return df_haplotype
+
+def load_mreps_repeats(filename: str, seqname: str):    
+    # Line of dashes shows up right before and right after mreps reports repeats
+    dashes = " ---------------------------------------------------------------------------------------------\n"
+    df_repeats = {
+        "str_id": [],
+        "chr": [],
+        "start": [],
+        "end": [],
+        "unit": [],
+        "period": [],
+        "ref": [],
+    }
+
+    with open(filename, 'r') as f:
+        parse_lines = False
+        for line in f:
+            if line == dashes:
+                parse_lines = False if parse_lines else True
+                continue
+            if parse_lines:
+                line_split = line.strip().split("\t")
+                
+                start, end = [int(i) for i in line_split[0].replace(" :   ", "").split("  ->  ")]
+                unit = line_split[-1].split(" ")[0] # assume resolution parameter was not set for mreps, i.e., all repeats are perfect                
+                period = int(line_split[2].replace(" <", "").replace("> ", ""))
+                ref = int(float(line_split[3].replace(" [", "").replace("] ", ""))) # exp will never be negative so int() == math.floor()
+
+                df_repeats["str_id"].append(f"{seqname}_{start}")
+                df_repeats["chr"].append(seqname)                
+                df_repeats["start"].append(start)
+                df_repeats["end"].append(end)
+                df_repeats["unit"].append(unit)
+                df_repeats["period"].append(period)
+                df_repeats["ref"].append(ref)
+
+    df_repeats = pd.DataFrame(df_repeats)
+    return df_repeats
+
+if __name__ == "__main__":
+    df_repeats = load_mreps_repeats("data/repeats/chr1_mreps.txt", "chr1")
+    print(df_repeats.head())
+    print(df_repeats.shape)
