@@ -69,7 +69,7 @@ curl -L https://s3.amazonaws.com/gangstr/hg38/genomewide/hg38_ver13.bed.gz | \
 cn-guided-str-genotying \
     --reads-per-allele 0 \
     --threads 16 \
-    --repeats hg38_ver13.bed \ # modified from https://s3.amazonaws.com/gangstr/hg38/genomewide/hg38_ver13.bed.gz
+    --repeats hg38_ver13_0boe_mononucleotides.bed \ # modified from https://s3.amazonaws.com/gangstr/hg38/genomewide/hg38_ver13.bed.gz
     --ploidy h_sapiens_male.json \
     --sample HG002.GRCh38.2x250_depth10x \
     --alignment HG002.GRCh38.2x250_depth10x.cram \
