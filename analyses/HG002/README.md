@@ -84,15 +84,15 @@ to loci that are covered by both the HG002 haplotypes *and* the Illumina short r
 We first extract the STR loci that are covered by the aligned HG002 genotypes using bedtools:
 ```bash
 grep "^R" HG002.maternal.f1_assembly_v2_genbank_sort_var.txt | cut -f 2-4 > HG002_maternal_regions.txt
-bedtools intersect -u -a hg38_ver13.bed -b HG002_maternal_regions.txt > hg38_ver13_in_maternal.bed
+bedtools intersect -u -a hg38_ver13_0boe_mononucleotides.bed -b HG002_maternal_regions.txt > hg38_ver13_0boe_mononucleotides_mat.bed
 
 grep "^R" HG002.paternal.f1_assembly_v2_genbank_sort_var.txt | cut -f 2-4 > HG002_paternal_regions.txt
-bedtools intersect -u -a hg38_ver13.bed -b HG002_paternal_regions.txt > hg38_ver13_in_paternal.bed
+bedtools intersect -u -a hg38_ver13_0boe_mononucleotides.bed -b HG002_paternal_regions.txt > hg38_ver13_0boe_mononucleotides_pat.bed
 
 # switching -a and -b files gives exactly the same result (checked with openssl sha256)
 bedtools intersect -u -a hg38_ver13_in_maternal.bed -b hg38_ver13_in_paternal.bed > hg38_ver13_union.bed
 
-grep "^chrX" hg38_ver13_in_maternal.bed >> hg38_ver13_union.bed # 40693 loci
-grep "^chrY" hg38_ver13_in_paternal.bed >> hg38_ver13_union.bed # 5136 loci
+grep "^chrX" hg38_ver13_0boe_mononucleotides_mat.bed >> hg38_ver13_0boe_mononucleotides_union.bed # 81268 loci
+grep "^chrY" hg38_ver13_0boe_mononucleotides_pat.bed >> hg38_ver13_0boe_mononucleotides_union.bed # 10549 loci
 ```
-813894 out of 832380 STR loci (97.78%) are covered by the HG002 haplotypes 
+1695865 out of 1733646 STR loci (97.82%) are covered by the HG002 haplotypes 
