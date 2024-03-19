@@ -4,7 +4,7 @@ import pandas as pd
 
 from cyvcf2 import VCF
 
-def dfs_from_vcf(filname: str, samples: list) -> pd.DataFrame:    
+def dfs_from_vcf(filename: str, samples: list, format: str = None) -> pd.DataFrame:    
     df_repeats = {
         "str_id": [],
         "chr": [],
@@ -22,7 +22,7 @@ def dfs_from_vcf(filname: str, samples: list) -> pd.DataFrame:
         "genotype": [],
     }
     
-    vcf = VCF(filname, samples=samples)
+    vcf = VCF(filename, samples=samples)
     for variant in vcf:
         str_id = f"{variant.CHROM}_{variant.POS}"
         df_repeats["str_id"].append(str_id)
@@ -39,10 +39,13 @@ def dfs_from_vcf(filname: str, samples: list) -> pd.DataFrame:
             try:
                 copy_number = variant.format("CN")[sample_idx]
                 df_samples["copy_number"].append(copy_number[0])
-            except TypeError:
+            except KeyError:
                 df_samples["copy_number"].append(np.nan)
             try:
-                frequencies = variant.format("FREQS")[sample_idx]
+                if format == "GangSTR":
+                    frequencies = variant.format("ENCLREADS")[sample_idx]
+                else:
+                    frequencies = variant.format("FREQS")[sample_idx]
                 freq_dict = dict()
                 for i in frequencies.split("|"):
                     i = i.split(",")
@@ -52,9 +55,13 @@ def dfs_from_vcf(filname: str, samples: list) -> pd.DataFrame:
                 df_samples["frequencies"].append(np.nan)
             try:
                 genotypes = variant.format("REPCN")[sample_idx]
-                if genotypes == ".":
-                    raise TypeError
-                genotypes = [int(i) for i in genotypes.split(",")]
+                if format == "GangSTR":
+                    if genotypes.size == 0:
+                        raise TypeError
+                else:
+                    if genotypes == ".":
+                        raise TypeError
+                    genotypes = [int(i) for i in genotypes.split(",")]
                 df_samples["genotype"].append(genotypes)
             except TypeError:
                 df_samples["genotype"].append(np.nan)
