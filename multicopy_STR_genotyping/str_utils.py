@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
+import numpy as np
 import pandas as pd
 
 def range_overlap(a_start: int, a_end: int, b_start: int, b_end: int) -> int:
     return max(0, min(a_end, b_end) - max(a_start, b_start) + 1)
+
+def expand_allele_lengths(lengths: dict):
+    expanded = []
+    for k, v in lengths.items():
+        expanded.extend([k] * int(v))
+    return np.array(sorted(expanded))
     
 def str_len_from_haplotype(locus: dict, df_haplotype: pd.DataFrame) -> int:
     """
