@@ -51,3 +51,11 @@ In total, this exported 1104925 records (every record represents one copy number
 for i in $(seq 0 601); do mkdir $i; done
 ```
 
+Then, we parse the `mongoexport` output file, generate bed files of CNV regions for each individual, and write them to the corresponding trio identifier directory that we just created. This happens in the notebook [2024-04-02_trio_specific_cnv_files.ipynb](2024-04-02_trio_specific_cnv_files.ipynb).
+
+## Generating trio-specific STR panels to use for genotyping
+For this analysis, we will investigate STRs that are located in CNVs. Since we have trios, we will analyze the STRs in each member of the trio that are affected by a CNV in *any* member of that trio. This may allow us to quantify Mendelian consistency of STR calls.
+
+First, we merge the Progenetix bed files of each trio to get a single bed file per trio that covers all regions affected by a CNV in that trio. We use `bedtools merge` for this, see the bash script [merge_cnv_beds.sh](merge_cnv_beds.sh).
+
+Then, we need to make a filtered STR panel for each trio that only contains loci located in a CNV in any member of that trio. We do this using `bedtools intersect` in the script [trio_specific_str_panels.sh](trio_specific_str_panels.sh).
