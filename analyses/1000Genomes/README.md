@@ -59,3 +59,6 @@ For this analysis, we will investigate STRs that are located in CNVs. Since we h
 First, we merge the Progenetix bed files of each trio to get a single bed file per trio that covers all regions affected by a CNV in that trio. We use `bedtools merge` for this, see the bash script [merge_cnv_beds.sh](merge_cnv_beds.sh).
 
 Then, we need to make a filtered STR panel for each trio that only contains loci located in a CNV in any member of that trio. We do this using `bedtools intersect` in the script [trio_specific_str_panels.sh](trio_specific_str_panels.sh).
+
+## Calling STR lengths using ConSTRain
+
