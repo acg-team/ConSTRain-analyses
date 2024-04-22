@@ -1,4 +1,4 @@
-# Analysis of STRs in CNVs in 1000 Genomes triads
+# Analysis of STRs in CNVs in 1000 Genomes family trios
 ## Overview of samples of interest
 Pedigree information for the 3202 samples included in the latest phase of the 1000 Genomes project is provided here: [https://www.internationalgenome.org/data-portal/data-collection/30x-grch38](https://www.internationalgenome.org/data-portal/data-collection/30x-grch38).
 ```bash
@@ -61,4 +61,32 @@ First, we merge the Progenetix bed files of each trio to get a single bed file p
 Then, we need to make a filtered STR panel for each trio that only contains loci located in a CNV in any member of that trio. We do this using `bedtools intersect` in the script [trio_specific_str_panels.sh](trio_specific_str_panels.sh).
 
 ## Calling STR lengths using ConSTRain
+We run ConSTRain with `--reads-per-allele 0` so we don't filter any loci out as long as one read maps to them (we can always filter later).
 
+```bash
+cn-guided-str-genotying \
+    --reads-per-allele 0 \
+    --threads 4 \
+    --repeats trio3_strs_0boe.bed \
+    --ploidy h_sapiens_male.json \
+    --cnvs trio3_cnv_regions.bed \
+    --sample HG00421 \
+    --alignment HG00421.final.cram \
+    --reference GRCh38_full_analysis_set_plus_decoy_hla.fa | \
+    bgzip > HG00421_ConSTRain.vcf.gz
+
+bcftools index HG00421_ConSTRain.vcf.gz
+```
+
+Then, we merge vcf files using bcftools to get one BCF file per family trio.
+
+```bash
+bcftools merge --threads 4  HG0042*.vcf.gz | bgzip > fam_trio_3.bcf
+bcftools index fam_trio_3.bcf
+```
+
+As an additional control, we determine which STR loci in our panel are located in segmental duplications, as this also has an effect on the copy number. The file containing segmental duplications can be found [here](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/genomicSuperDups.txt.gz). This file needs to be wrangled a bit to get it into bed format.
+
+```bash
+bedtools intersect -u -a hg38_ver13_0boe_mononucleotides.bed -b hg38.genomicSuperDups.bed > hg38_ver13_0boe_mononucleotides_in_segdup.bed
+```

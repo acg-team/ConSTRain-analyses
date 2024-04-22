@@ -4,7 +4,7 @@ import pandas as pd
 
 from cyvcf2 import VCF
 
-def dfs_from_vcf(filename: str, samples: list, format: str = None) -> pd.DataFrame:    
+def dfs_from_vcf(filename: str, samples: list = None, format: str = None) -> pd.DataFrame:    
     df_repeats = {
         "str_id": [],
         "chr": [],
