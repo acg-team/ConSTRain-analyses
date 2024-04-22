@@ -5,7 +5,7 @@
 set -euo pipefail
 
 # IMPORTANT: 'CSV' should:
-#   - be a comme-separated file
+#   - be a comma-separated file
 #   - contain single a header line
 #   - contain the following columns: <sequential index>,triadID,sampleID,role,pgx_id,sex,ENA_FILE_PATH
 CSV="../../data/1000Genomes/1000_genomes_triad_pedigrees.csv"
