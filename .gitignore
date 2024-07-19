@@ -1,6 +1,8 @@
 data/
 results/
 slurm/
+scratch.py
+bin/
 
 .ipynb_checkpoints/
 __pycache__

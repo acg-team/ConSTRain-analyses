@@ -57,7 +57,7 @@ We are not interested in generating realistic sequencing errors here, we just wa
 $$
 \begin{equation}
     \begin{aligned}
-        c &= \frac{(LN)}{G},
+        c &= \frac{LN}{G},
     \end{aligned}
 \end{equation}
 $$
@@ -65,7 +65,7 @@ where $c$ is the sequencing depth, $L$ is the read length, $N$ is the number of 
 $$
 \begin{equation}  
     \begin{aligned}
-        \frac{(150N)}{46709983} &= 15 \\[5pt]
+        \frac{150N}{46709983} &= 15 \\[5pt]
         150N &= 15 * 46709983 \\[5pt]
         N &= \frac{15 * 46709983}{150} = 0.1 * 46709983 = 4670998.3
     \end{aligned}

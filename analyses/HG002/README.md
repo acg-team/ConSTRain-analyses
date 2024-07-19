@@ -59,21 +59,23 @@ samtools index -@ 15 HG002.GRCh38.2x250.cram
 ## STR length calling
 ### CN-guided STR genotyping
 #### Get and modify GangSTR STR annotation of HG38
+Download GangSTR reference panel and decrement start position to convert to BED specifications.
 ```bash
 curl -L https://s3.amazonaws.com/gangstr/hg38/genomewide/hg38_ver13.bed.gz | \
     gunzip | \
     awk 'BEGIN {OFS = "\t" } {$2 -= 1} {print $0}' > \
     hg38_ver13.bed
 ```
-#### Run genotyper
+This file is then extended with a custom annotation of mononucleotide repeats (see [here](../mononucleotide_repeats/README.md)).
+
+#### Run ConSTRain
 ```bash
-cn-guided-str-genotying \
-    --reads-per-allele 0 \
-    --threads 16 \
-    --repeats hg38_ver13_0boe_mononucleotides.bed \ # modified from https://s3.amazonaws.com/gangstr/hg38/genomewide/hg38_ver13.bed.gz
-    --ploidy h_sapiens_male.json \
-    --sample HG002.GRCh38.2x250_depth10x \
+ConSTRain alignment \
+    --repeats hg38_ver13_0boe_mononucleotides.bed \
     --alignment HG002.GRCh38.2x250_depth10x.cram \
+    --ploidy h_sapiens_male.json \
+    --threads 16 \
+    --sample HG002.GRCh38.2x250_depth10x \
     --reference hg38.fa.gz > \
     HG002.GRCh38.2x250_depth10x.vcf
 ```
@@ -108,5 +110,7 @@ bedtools intersect -u -a hg38_ver13_in_maternal.bed -b hg38_ver13_in_paternal.be
 
 grep "^chrX" hg38_ver13_0boe_mononucleotides_mat.bed >> hg38_ver13_0boe_mononucleotides_union.bed # 81268 loci
 grep "^chrY" hg38_ver13_0boe_mononucleotides_pat.bed >> hg38_ver13_0boe_mononucleotides_union.bed # 10549 loci
+
+wc -l hg38_ver13_0boe_mononucleotides_union.bed # 1695865 loci
 ```
 1695865 out of 1733646 STR loci (97.82%) are covered by the HG002 haplotypes 
