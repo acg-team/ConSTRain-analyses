@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import sys
 
 from cyvcf2 import VCF
 import numpy as np
@@ -269,7 +270,8 @@ def load_haplotype_vars(filename: str, min_mapq=20) -> pd.DataFrame:
 
     return df_haplotype
 
-def load_mreps_repeats(filename: str, seqname: str):    
+def load_mreps_repeats(filename: str, seqname: str, thresholds: dict) -> pd.DataFrame:
+    """mreps coordinates are 1-based inclusive""" 
     # Line of dashes shows up right before and right after mreps reports repeats
     dashes = " ---------------------------------------------------------------------------------------------\n"
     df_repeats = {
@@ -290,12 +292,20 @@ def load_mreps_repeats(filename: str, seqname: str):
                 continue
             if parse_lines:
                 line_split = line.strip().split("\t")
-                
-                start, end = [int(i) for i in line_split[0].replace(" :   ", "").split("  ->  ")]
-                unit = line_split[-1].split(" ")[0] # assume resolution parameter was not set for mreps, i.e., all repeats are perfect                
+
                 period = int(line_split[2].replace(" <", "").replace("> ", ""))
                 ref = int(float(line_split[3].replace(" [", "").replace("] ", ""))) # exp will never be negative so int() == math.floor()
+                try:
+                    if ref < thresholds[period]:
+                        continue
+                except KeyError:
+                    print(f"Got repeat with period {period} which was not in thresholds dict. Not applying filter", file=sys.stderr)
+                    pass
 
+                start = int(line_split[0].replace(" :   ", "").split("  ->  ")[0])
+                end = start + (period * ref) - 1
+                unit = line_split[-1].split(" ")[0] # assume resolution parameter was not set for mreps, i.e., all repeats are perfect                
+                
                 df_repeats["str_id"].append(f"{seqname}_{start}")
                 df_repeats["chr"].append(seqname)                
                 df_repeats["start"].append(start)
@@ -308,6 +318,14 @@ def load_mreps_repeats(filename: str, seqname: str):
     return df_repeats
 
 if __name__ == "__main__":
-    df_repeats = load_mreps_repeats("data/repeats/chr1_mreps.txt", "chr1")
+    thresholds = {
+        1: 10,
+        2: 6,
+        3: 4,
+        4: 3,
+        5: 3,
+        6: 3,
+    }
+    df_repeats = load_mreps_repeats("data/banana/repeats/chr01_mreps.out", "chr01", thresholds)
     print(df_repeats.head())
     print(df_repeats.shape)
