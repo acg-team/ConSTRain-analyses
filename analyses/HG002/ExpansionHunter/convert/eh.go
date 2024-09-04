@@ -18,13 +18,22 @@ var (
 		"period": 3,
 		"unit":   4,
 	}
+	bufSize int = 1.7e6 // based on size of STR panel (1659608 lines)
 )
 
 type jsonRecord struct {
-	ID        string `json:"LocusID"`
+	ID        string `json:"LocusId"`
 	Structure string `json:"LocusStructure"`
 	Region    string `json:"ReferenceRegion"`
 	VarType   string `json:"VariantType"`
+}
+
+func lineToJSON(record []string) jsonRecord {
+	id := fmt.Sprintf("%s_%s", record[colIdx["chr"]], record[colIdx["start"]])
+	structure := fmt.Sprintf("(%s)*", record[colIdx["unit"]])
+	region := fmt.Sprintf("%s:%s-%s", record[colIdx["chr"]], record[colIdx["start"]], record[colIdx["end"]])
+
+	return jsonRecord{ID: id, Structure: structure, Region: region, VarType: "Repeat"}
 }
 
 func main() {
@@ -45,23 +54,33 @@ func main() {
 	r.Comma = '\t'
 	r.FieldsPerRecord = len(colIdx)
 
-	// set capacity to slightly above known number of records in the bed file
-	b := make([]jsonRecord, 0, 1.7e6)
-	for {
-		record, err := r.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
+	// read lines and send them over `c`. `c` is buffered so we
+	// should hopefully never block while reading
+	c := make(chan []string, bufSize)
+	go func() {
+		// close channel once all lines are read
+		defer close(c)
 
-		id := fmt.Sprintf("%s_%s", record[colIdx["chr"]], record[colIdx["start"]])
-		structure := fmt.Sprintf("(%s)*", record[colIdx["unit"]])
-		region := fmt.Sprintf("%s:%s-%s", record[colIdx["chr"]], record[colIdx["start"]], record[colIdx["end"]])
+		for {
+			record, err := r.Read()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatal(err)
+			}
 
-		jrecord := jsonRecord{ID: id, Structure: structure, Region: region, VarType: "Repeat"}
-		b = append(b, jrecord)
+			c <- record
+			// fmt.Println("Line read")
+		}
+	}()
+
+	// as long as we're getting records over `c`, convert them to
+	// `jsonRecord`s and add them to our buffer `b`
+	b := make([]jsonRecord, 0, bufSize)
+	for record := range c {
+		b = append(b, lineToJSON(record))
+		// fmt.Println("Line processed")
 	}
 
 	jsonOut, err := json.MarshalIndent(

@@ -101,12 +101,10 @@ samtools index simulated_trisomy_21.bam
 <!-- chr21_13941477, chr21_15583008, chr21_15678835 could be used as example loci -->
 
 ```bash
-# Takes 6.1s to run (22.8s on single core)
-cn-guided-str-genotying \
-    --reads-per-allele 0 \
-    --threads 4 \
+# Takes 42.8s to run on single core
+ConSTRain \
     --repeats hg38_ver13_0boe_mononucleotides_chr21.bed \
-    --ploidy h_sapiens_male_tri21.json \
+    --karyotype h_sapiens_male_tri21.json \
     --sample simulated_trisomy_21 \
     --alignment simulated_trisomy_21.bam \
     --reference GRCh38_chr21.fa.gz > \
@@ -114,7 +112,7 @@ cn-guided-str-genotying \
 ```
 
 ```bash
-# Takes 7m44s to run (roughly 20x of ConSTRain on single core)
+# Takes 7m44s to run (roughly 11x of ConSTRain on single core)
 GangSTR \
     --bam simulated_trisomy_21.bam \
     --ref GRCh38_chr21.fa.gz \
@@ -122,4 +120,16 @@ GangSTR \
     --out GangSTR_simulated_trisomy_21 \
     --bam-samps simulated_trisomy_21 \
     --samp-sex M
+```
+
+```bash
+HipSTR \
+   --bams simulated_trisomy_21.bam \
+   --bam-samps tri21 \
+   --bam-libs tri21 \
+   --fasta GRCh38_chr21.fa.gz \
+   --regions hg38_ver13_mononucleotides_hipstr_chr21.tsv \
+   --def-stutter-model \
+   --min-reads 0 \
+   --str-vcf HipSTR_simulated_trisomy_21.vcf.gz
 ```

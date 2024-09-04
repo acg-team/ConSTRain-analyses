@@ -3,6 +3,7 @@ results/
 slurm/
 scratch.py
 bin/
+figures/
 
 .ipynb_checkpoints/
 __pycache__
