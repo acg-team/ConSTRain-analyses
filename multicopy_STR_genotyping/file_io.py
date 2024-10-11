@@ -69,7 +69,7 @@ def parse_constrain_format(df_samples: pd.DataFrame, variant, sample_idx) -> pd.
         df_samples["frequencies"].append(np.nan)
 
     try:
-        genotypes = variant.format("REPCN")[sample_idx]
+        genotypes = variant.format("REPLEN")[sample_idx]
         if genotypes == ".":
             raise ValueError
         genotypes = [int(i) for i in genotypes.split(",")]

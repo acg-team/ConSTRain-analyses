@@ -1,6 +1,7 @@
 data/
 results/
 slurm/
+scratch/
 scratch.py
 bin/
 figures/
