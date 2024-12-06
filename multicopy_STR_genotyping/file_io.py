@@ -54,9 +54,12 @@ def parse_constrain_info(df_repeats: pd.DataFrame, variant) -> pd.DataFrame:
 
     return df_repeats
 
-def parse_constrain_format(df_samples: pd.DataFrame, variant, sample_idx) -> pd.DataFrame:
-    copy_number = variant.format("CN")[sample_idx]
-    df_samples["copy_number"].append(copy_number[0])
+def parse_constrain_format(df_samples: dict, variant, sample_idx) -> dict:
+    try:
+        copy_number = variant.format("CN")[sample_idx][0]
+    except TypeError:
+        copy_number = np.nan
+    df_samples["copy_number"].append(copy_number)
     
     try:
         frequencies = variant.format("FREQS")[sample_idx]
