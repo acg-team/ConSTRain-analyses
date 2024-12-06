@@ -1,5 +1,6 @@
 data/
 results/
+analyses_hide/
 slurm/
 scratch/
 scratch.py
