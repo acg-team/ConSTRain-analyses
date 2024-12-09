@@ -6,6 +6,7 @@ scratch/
 scratch.py
 bin/
 figures/
+submission/
 
 .ipynb_checkpoints/
 __pycache__
