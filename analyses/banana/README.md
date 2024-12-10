@@ -30,7 +30,7 @@ done
 
 By running mreps like this, we get MANY repeats.
 We need to do some filtering to cut this set of repeats down to the more relevant STRs with allele length thresholds.
-Also, mreps randomly replaces 'N's in the reference sequence with a nucleotide, so there may be spurious hits.
+Also, mreps replaces 'N's in the reference sequence with a random nucleotide, so there may be spurious hits.
 Thus, we also checked for each repeat whether the sequence reported by mreps exactly matches the reference genome in that position.
 These steps are implemented in [combine_filter_mreps.ipynb](combine_filter_mreps.ipynb).
 There are 183345 STRs left after combining and filtering.
