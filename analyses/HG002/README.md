@@ -57,7 +57,7 @@ samtools index -@ 15 HG002.GRCh38.2x250.cram
 ```
 
 ## STR length calling
-### CN-guided STR genotyping
+### ConSTRain
 #### Get and modify GangSTR STR annotation of HG38
 Download GangSTR reference panel and decrement start position to convert to BED specifications.
 ```bash
