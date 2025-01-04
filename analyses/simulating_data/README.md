@@ -44,7 +44,7 @@ samtools faidx GRCh38_chr21.fa.gz
 All good so far, but HG002 has the same issues as the other assemblies... I guess we need te generate artificial chromosomes 21 from the STR variants called when we aligned the HG002 haplotypes to GRCh38 to determine ConSTRain's accuracy.
 
 ## Obtaining assemblies to simulate short reads from: third attempt
-In the end, we just generate a new reference sequence ourselves that only differes from GRCh38 at STR loci that are not the same as the reference in the HG002 assemblies. This is done based on the STR variant calls from the assembly to reference alignment we generated previously (see [2024-03-11_STR_lengths_from_haplotypes.ipynb](../HG002/2024-03-11_STR_lengths_from_haplotypes.ipynb)). We generate a chr21 representation for the HG002 maternal and paternal haplotypes separately and write them to fasta file. See [2024-05-22_reference_from_STR_genotypes.ipynb](2024-05-22_reference_from_STR_genotypes.ipynb) for details.
+In the end, we just generate a new reference sequence ourselves that only differes from GRCh38 at STR loci that are not the same as the reference in the HG002 assemblies. This is done based on the STR variant calls from the assembly to reference alignment we generated previously (see [STR_lengths_from_haplotypes.ipynb](../HG002/STR_lengths_from_haplotypes.ipynb)). We generate a chr21 representation for the HG002 maternal and paternal haplotypes separately and write them to fasta file. See [reference_from_STR_genotypes.ipynb](reference_from_STR_genotypes.ipynb) for details.
 
 We also bgzip and index the new fasta files.
 ```bash
